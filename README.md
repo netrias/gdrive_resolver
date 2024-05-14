@@ -41,4 +41,3 @@ print(absolute_path)
 ```
 If it still cannot resolve your path, please ensure that your Google Drive is mounted, accessible,
 and that it is called "Google Drive" or "GoogleDrive" in your system.
-```
