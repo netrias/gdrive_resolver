@@ -6,27 +6,10 @@ paths to absolute system paths.
 Example Usage:
 
 ```python
-from src import GoogleDriveResolver
+from gdriveresolver import GDriveResolver
 
-gdrive_resolver = GoogleDriveResolver()
-absolute_path = gdrive_resolver.resolve('my/path/in/google/drive/myfile.txt')
-print(absolute_path)
-```
-```output
-"/path/to/mounted/google/drive/my/path/in/google/drive/myfile.txt"
-```
-
-## Development
-```bash
-git clone
-cd src
-# Create a virtual environment, then:
-pip install -r requirements.txt
-```
-
-## Testing
-```bash
-pytest tests
+gdrive_resolver = GDriveResolver()
+absolute_path: str = gdrive_resolver.resolve('my/path/in/google/drive/myfile.txt')
 ```
 
 ## Troubleshooting
@@ -34,9 +17,9 @@ If GoogleDriveResolver cannot resolve your Google Drive path, it may not be sear
 You can increase the depth by passing the `max_depth` parameter to the constructor.
 
 ```python
-from src import GoogleDriveResolver
+from gdriveresolver import GDriveResolver
 
-absolute_path = GoogleDriveResolver(max_depth=10).resolve('my/path/in/google/drive/myfile.txt')
+absolute_path = GDriveResolver(max_depth=10).resolve('my/path/in/google/drive/myfile.txt')
 print(absolute_path)
 ```
 If it still cannot resolve your path, please ensure that your Google Drive is mounted, accessible,

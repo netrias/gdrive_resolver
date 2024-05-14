@@ -1,6 +1,6 @@
 [project]
 name = "gdriveresolver"
-version = "0.0.1"
+version = "0.0.5"
 authors = [
   { name="C Harman", email="charman@netrias.com" },
 ]
@@ -16,3 +16,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/netrias/gdrive_resolver"
 Issues = "https://github.com/netrias/gdrive_resolver/issues"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
