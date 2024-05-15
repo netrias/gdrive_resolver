@@ -27,4 +27,4 @@ python3 -m twine upload dist/* || {
 }
 
 # Confirmation message
-echo "Package uploaded to TestPyPI successfully!"
+echo "Package uploaded to PyPi successfully!"

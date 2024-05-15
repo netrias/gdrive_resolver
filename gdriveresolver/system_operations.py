@@ -21,7 +21,7 @@ def get_operating_system() -> OSDefinition:
         raise GDriveNotFoundError("Unsupported operating system.")
 
 
-def locate_google_drive(os_type: OSDefinition, max_depth: int, max_workers: int) -> Path:
+def locate_google_drive(os_type: OSDefinition, max_depth: int, max_workers: int) -> Optional[Path]:
     """
     Locate the Google Drive path by searching the filesystem.
     @param os_type: OSDefinition, the operating system of the current environment.
@@ -48,7 +48,9 @@ def locate_google_drive(os_type: OSDefinition, max_depth: int, max_workers: int)
             except PermissionError:
                 # Skip locations where permission is denied
                 continue
-    raise GDriveNotFoundError(f"Google Drive not found. Searched in {search_roots} up to depth {max_depth}.")
+    print(f"Warning: Google Drive not found. Searched in {search_roots} up to depth {max_depth}.")
+    print("Warning: Paths will be resolved relative to the root directory.")
+    return None
 
 
 def _search_directory_for_drive(search_root: Path, common_names: list, max_depth: int) -> Optional[Path]:

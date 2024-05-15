@@ -15,7 +15,7 @@ class OSDefinition:
 windows_definition = OSDefinition(
     name='Windows',
     sanitize_path=lambda file_path: file_path.replace('/', '\\'),
-    root_search_paths=[Path(f"{drive}:\\") for drive in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"],
+    root_search_paths=[Path(f"{drive}:\\") for drive in "CDEFGHIJKLMNOPQRSTUVWXYZAB"],
     platform_name='win'
 )
 
