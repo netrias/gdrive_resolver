@@ -23,27 +23,28 @@ class GDriveResolver:
         """
         as_path = Path(path_to_resolve)
 
+        sanitized_path = self.os_type.sanitize_path(path_to_resolve)
+
         # Case 1: If Google Drive path is resolved, check path relative to Google Drive
         if self.drive_path:
-            sanitized_path = self.os_type.sanitize_path(path_to_resolve)
             absolute_path = self.drive_path / sanitized_path
             if absolute_path.exists():
                 return str(absolute_path)
-            else:
-                return _terminate(must_resolve)
 
         # Case 2: Google Drive path is not resolved, check against absolute path
-        if as_path.is_absolute():
-            if as_path.exists():
-                return str(as_path)
-            else:
-                return _terminate(must_resolve)
+        if as_path.is_absolute() and as_path.exists():
+            return str(as_path)
 
         # Case 3: If Google Drive path is not resolved, check path relative to root search paths
         for root in self.os_type.root_search_paths:
             potential_path = root / as_path
             if potential_path.exists():
                 return str(potential_path)
+
+        # Case 4: User is resolving a stem rather than a full name, so allow it to return to user if they have specified
+        # that it does not need to resolve, and the user can modify the path with the appropriate extension(s)
+        if not must_resolve:
+            return str(self.drive_path / sanitized_path)
 
         return _terminate(must_resolve)
 

@@ -63,9 +63,6 @@ class TestGDriveResolver(unittest.TestCase):
         Then it should check the path relative to root search paths
         """
         # Given
-        mock_os = MagicMock()
-        mock_get_os.return_value = mock_os
-        mock_os.root_search_paths = [Path('/mock/root1'), Path('/mock/root2')]
         self.resolver.drive_path = None
 
         path = 'relative/path/to/file.txt'
@@ -79,25 +76,19 @@ class TestGDriveResolver(unittest.TestCase):
         # Then
         assert result == expected_path
 
-    @patch('gdriveresolver.resolver.locate_google_drive')
-    @patch('gdriveresolver.resolver.get_operating_system')
-    def test_file_not_found_must_resolve(self, mock_get_os, mock_locate_drive):
+    def test_file_not_found_must_resolve(self):
         """
         Given a non-existent file
         When must_resolve is True
         Then it should raise a FileNotFoundError
         """
         # Given
-        mock_os = MagicMock()
-        mock_get_os.return_value = mock_os
-        mock_os.root_search_paths = [Path('/mock/root1'), Path('/mock/root2')]
-        mock_locate_drive.return_value = None
-
         path = 'nonexistent/file.txt'
 
         # When
         with patch.object(Path, 'is_absolute', return_value=False):
             with patch.object(Path, 'exists', return_value=False):
+                # Then
                 with self.assertRaises(FileNotFoundError):
                     self.resolver.resolve(path, must_resolve=True)
 
@@ -114,6 +105,7 @@ class TestGDriveResolver(unittest.TestCase):
         mock_get_os.return_value = mock_os
         mock_os.root_search_paths = [Path('/mock/root1'), Path('/mock/root2')]
         mock_locate_drive.return_value = None
+        self.resolver.drive_path = Path("")
 
         path = 'nonexistent/file.txt'
 
@@ -121,9 +113,8 @@ class TestGDriveResolver(unittest.TestCase):
         with patch.object(Path, 'is_absolute', return_value=False):
             with patch.object(Path, 'exists', return_value=False):
                 result = self.resolver.resolve(path, must_resolve=False)
-
-        # Then
-        self.assertIsNone(result)
+                # Then
+                assert result == path
 
 
 if __name__ == '__main__':

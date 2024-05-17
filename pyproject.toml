@@ -1,6 +1,6 @@
 [project]
 name = "gdriveresolver"
-version = "0.0.6"
+version = "0.0.8"
 authors = [
   { name="C Harman", email="charman@netrias.com" },
 ]
