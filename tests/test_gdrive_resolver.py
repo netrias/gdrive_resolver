@@ -55,8 +55,7 @@ class TestGDriveResolver(unittest.TestCase):
         # Then
         assert result == expected_path
 
-    @patch('gdriveresolver.resolver.get_operating_system')
-    def test_resolve_relative_to_root_search_paths(self, mock_get_os):
+    def test_resolve_relative_to_root_search_paths(self):
         """
         Given a relative path
         When the Google Drive path is not resolved
@@ -115,6 +114,30 @@ class TestGDriveResolver(unittest.TestCase):
                 result = self.resolver.resolve(path, must_resolve=False)
                 # Then
                 assert result == path
+
+    @patch('gdriveresolver.system_operations.get_operating_system')
+    def test_resolve_from_custom_directory(self, mock_get_os):
+        """
+        Given a relative path within some specified directory
+        When the Google Drive path is resolved
+        Then it should return the absolute path within Google Drive
+        """
+        # Given
+        local_resolver = GDriveResolver(directory_name='custom_directory', max_depth=1, max_workers=1)
+        mock_os = MagicMock()
+        mock_get_os.return_value = mock_os
+        local_resolver.drive_path = Path('/custom_directory')
+        mock_os.sanitize_path.return_value = 'relative/path/to/file.txt'
+
+        path = 'relative/path/to/file.txt'
+        expected_path = '/custom_directory/relative/path/to/file.txt'
+
+        # When
+        with patch.object(Path, 'exists', return_value=True):
+            result = local_resolver.resolve(path)
+
+        # Then
+        assert result == expected_path
 
 
 if __name__ == '__main__':

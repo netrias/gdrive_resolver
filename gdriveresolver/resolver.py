@@ -1,29 +1,52 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from .model import OSDefinition
 from .system_operations import get_operating_system, locate_google_drive
 
 
 class GDriveResolver:
-    def __init__(self, max_depth: int = 6, max_workers: int = 5):
+    def __init__(self,
+                 directory_name: Union[str, Path, None] = None,
+                 max_depth: int = 6,
+                 max_workers: int = 5):
+        """
+        Initialize the Google Drive resolver.
+        :param directory_name: The name of the drive to locate--if not specified, this will search for common
+         Google Drive mount names.
+        :param max_depth: The max directory depth from system root to search for Google Drive.
+        :param max_workers: Maximum number of threads to use for parallel search.
+        """
+
+        self.directory_names = ['Google Drive',
+                                'GoogleDrive',
+                                'googledrive',
+                                'google_drive',
+                                'Google_Drive']
+        if directory_name is not None:
+            self.directory_names = [Path(directory_name)]
+
         self.os_type: OSDefinition = get_operating_system()
-        self.drive_path: Optional[Path] = locate_google_drive(self.os_type, max_depth, max_workers)
+        print(f"Directory names: {self.directory_names}")
+        print(f"Directory name: {directory_name}")
+        self.drive_path: Optional[Path] = locate_google_drive(self.os_type,
+                                                              self.directory_names,
+                                                              max_depth,
+                                                              max_workers)
 
     def resolve(self, path_to_resolve: str, must_resolve: bool = True) -> Optional[str]:
         """
         Resolve the absolute path of a file given its relative path in Google Drive.
+        Returns a string by default since most Python libraries expect strings for file paths.
 
-        Parameters:
-            path_to_resolve (str): The relative path within Google Drive.
-            must_resolve (bool): Whether to raise an error if the file is not found.
-
-        Returns:
-            Optional[str]: The absolute path if found, else None.
+        :param path_to_resolve: The relative path within Google Drive.
+        :param must_resolve: Whether to raise an error if the file is not found.
+        :returns: The absolute path if found, else None.
         """
         as_path = Path(path_to_resolve)
 
-        sanitized_path = self.os_type.sanitize_path(path_to_resolve)
+        # sanitized_path = self.os_type.sanitize_path(path_to_resolve)
+        sanitized_path = as_path
 
         # Case 1: If Google Drive path is resolved, check path relative to Google Drive
         if self.drive_path:
@@ -47,6 +70,18 @@ class GDriveResolver:
             return str(self.drive_path / sanitized_path)
 
         return _terminate(must_resolve)
+
+    def resolve_path(self, path_to_resolve: Path, must_resolve: bool = True) -> Optional[Path]:
+        """
+        Resolve the absolute path of a file given its relative path in Google Drive into a Path object.
+        :param path_to_resolve: The relative path within Google Drive.
+        :param must_resolve: Whether to raise an error if the file is not found.
+        :returns: The absolute path if found, else None.
+        """
+        resolved = self.resolve(str(path_to_resolve), must_resolve)
+        if resolved is None:
+            return None
+        return Path(resolved)
 
 
 def _terminate(must_resolve: bool) -> None:
