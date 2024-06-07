@@ -45,8 +45,7 @@ class GDriveResolver:
         """
         as_path = Path(path_to_resolve)
 
-        # sanitized_path = self.os_type.sanitize_path(path_to_resolve)
-        sanitized_path = as_path
+        sanitized_path = self.os_type.sanitize_path(path_to_resolve)
 
         # Case 1: If Google Drive path is resolved, check path relative to Google Drive
         if self.drive_path:
